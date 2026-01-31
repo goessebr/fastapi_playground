@@ -11,16 +11,16 @@ from app.services.base import CommonService
 class PersoonService:
     def __init__(self, dao: PersoonDAO):
         self.dao = dao
-        self.common = CommonService(dao)
+        self.common = CommonService()
 
     async def get_persoon(self, persoon_id: int) -> Persoon | None:
         return await self.dao.get_by_id(persoon_id)
 
-    async def create_persoon(self, persoon_data: PersoonCreate, created_by: dict) -> Persoon:
-        existing = await self.dao.get_by_voornaam(persoon_data.voornaam)
+    async def create_persoon(self, persoon_schema: PersoonCreate, created_by: dict) -> Persoon:
+        existing = await self.dao.get_by_voornaam(persoon_schema.voornaam)
         if existing:
             raise PersoonExistsException()
-        data = persoon_data.model_dump()  # relaties, systemfields, last_status, nested dict, kostprijs # todo
+        data = persoon_schema.model_dump()
         self.common.set_system_fields_new_entry(data, created_by=created_by)
         new = Persoon(**data)
         return await self.dao.save(new)
