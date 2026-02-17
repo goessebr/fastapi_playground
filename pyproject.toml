@@ -17,7 +17,7 @@ dependencies = [
     "alembic>=1.18.0",
     "psycopg2>=2.9.11",
 ]
-[tool.ruff.settings]
+[tool.ruff]
 line-length = 90
 #select = ["E", "F", "W", "C90", "B", "I", "T"]
 #ignore = ["E501", "W503"]
