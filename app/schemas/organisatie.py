@@ -15,6 +15,10 @@ class OrganisatieRef(BaseModel):
     id: int
 
 
+class OrganisatieSummary(OrganisatieBase, OrganisatieRef):
+    pass
+
+
 class OrganisatieResponse(OrganisatieBase):
     model_config = ConfigDict(from_attributes=True)
     id: int

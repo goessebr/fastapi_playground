@@ -6,7 +6,7 @@ from typing import List
 from pydantic import field_validator
 
 from app.schemas.common import SystemFields
-from app.schemas.organisatie import OrganisatieResponse, OrganisatieRef
+from app.schemas.organisatie import OrganisatieSummary, OrganisatieRef
 
 
 class PersoonBase(BaseModel):
@@ -24,7 +24,9 @@ class PersoonCreate(PersoonBase):
         ids = [getattr(ref, "id") for ref in value]
         duplicates = set([oid for oid in ids if ids.count(oid) > 1])
         if duplicates:
-            raise ValueError(f"Duplicate organisatie ids are not allowed. Duplicates: {sorted(duplicates)}")
+            raise ValueError(
+                f"Duplicate organisatie ids are not allowed. Duplicates: {sorted(duplicates)}"
+            )
         return value
 
 
@@ -32,3 +34,4 @@ class PersoonResponse(PersoonBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
     systemfields: SystemFields
+    organisaties: List[OrganisatieSummary] | None = None
