@@ -1,3 +1,6 @@
-from . import health
-from . import auth
-from . import persoon
+__all__ = [
+    "auth",
+    "health",
+    "persoon",
+    "organisatie",
+]
