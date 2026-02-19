@@ -18,6 +18,13 @@ dependencies = [
     "psycopg2>=2.9.11",
 ]
 [tool.ruff]
-line-length = 90
+line-length = 88
 #select = ["E", "F", "W", "C90", "B", "I", "T"]
 #ignore = ["E501", "W503"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["alembic"]
+known-first-party = ["tests", "<project>"]
+case-sensitive = true
+force-single-line = true
+order-by-type = false
