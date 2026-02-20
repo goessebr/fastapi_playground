@@ -1,4 +1,7 @@
 import datetime
+from typing import Callable
+from typing import Iterable
+from typing import List
 from zoneinfo import ZoneInfo
 from datetime import datetime
 
@@ -36,9 +39,9 @@ class CommonDAO(Generic[ModelType]):
         )
         return result.scalars().first()
 
-    async def save(self, orm_object: ModelType) -> ModelType:
+    async def save(self, orm_object: ModelType, attribute_names: Iterable[str] | None = None) -> ModelType:
         self.set_db_system_fields(orm_object)
         self.db.add(orm_object)
         await self.db.flush()
-        await self.db.refresh(orm_object)
+        await self.db.refresh(orm_object, attribute_names=attribute_names)
         return orm_object
