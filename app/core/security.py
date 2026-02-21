@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from typing import Optional
 
 from passlib.context import CryptContext
@@ -20,7 +21,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:
     settings = get_settings()
     to_encode = {"sub": str(subject)}
-    now = datetime.utcnow()
+    now = datetime.now(ZoneInfo("Europe/Brussels"))
     if expires_delta:
         expire = now + expires_delta
     else:
