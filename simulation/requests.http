@@ -1,4 +1,3 @@
-###
 # POST create organisatie
 POST http://localhost:8000/organisaties
 Accept: application/json
@@ -13,6 +12,14 @@ Accept: application/json
 Content-Type: application/json
 
 < ./requests_fixtures/persoon_create.json
+
+###
+# POST create persoon in organisatie
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create_privaat.json
 
 ###
 # POST create persoon without organisatie

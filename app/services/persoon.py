@@ -1,9 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.data.db.dao.persoon import PersoonDAO
 from app.data.db.dao.organisatie import OrganisatieDAO
 from app.data.db.models import Organisatie
 from app.data.db.models.persoon import Persoon
+from app.enums import ZichtbaarheidEnum
 from app.schemas.persoon import PersoonCreate
 
 from app.exceptions.persoon import PersoonExistsException

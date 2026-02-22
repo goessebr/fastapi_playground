@@ -5,6 +5,7 @@ from typing import List
 
 from pydantic import field_validator
 
+from app.enums import ZichtbaarheidEnum
 from app.schemas.common import SystemFields
 from app.schemas.organisatie import OrganisatieSummary, OrganisatieRef
 
@@ -15,6 +16,7 @@ class PersoonBase(BaseModel):
 
 class PersoonCreate(PersoonBase):
     organisaties: List[OrganisatieRef] | None = None
+    zichtbaarheid: ZichtbaarheidEnum = ZichtbaarheidEnum.publiek
 
     @field_validator("organisaties")
     @classmethod
@@ -35,3 +37,4 @@ class PersoonResponse(PersoonBase):
     id: int
     systemfields: SystemFields
     organisaties: List[OrganisatieSummary] | None = None
+    zichtbaarheid: ZichtbaarheidEnum
