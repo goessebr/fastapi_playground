@@ -1,0 +1,61 @@
+# POST create organisatie
+POST http://localhost:8000/organisaties
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/organisatie_create.json
+
+###
+# POST create persoon in organisatie
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create.json
+
+###
+# POST create persoon in organisatie
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create_privaat.json
+
+###
+# POST create persoon without organisatie
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create_no_organisatie.json
+
+###
+# POST create persoon: expect 400
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create_400.json
+
+###
+# POST create persoon: expect 400
+POST http://localhost:8000/personen
+Accept: application/json
+Content-Type: application/json
+
+< ./requests_fixtures/persoon_create_400_2.json
+
+###
+# GET persoon by id 1
+GET http://localhost:8000/personen/1
+Accept: application/json
+
+###
+# GET organisatie by id 1
+GET http://localhost:8000/organisaties/1
+Accept: application/json
+
+###
+# GET persoon by id 999: expect 404
+GET http://localhost:8000/personen/999
+Accept: application/json

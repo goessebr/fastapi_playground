@@ -1,7 +1,13 @@
-# File: app/schemas/user.py
 from pydantic import BaseModel
 from pydantic import Field
-from datetime import datetime
+from pydantic import ConfigDict
+from typing import List
+
+from pydantic import field_validator
+
+from app.enums import ZichtbaarheidEnum
+from app.schemas.common import SystemFields
+from app.schemas.organisatie import OrganisatieSummary, OrganisatieRef
 
 
 class PersoonBase(BaseModel):
@@ -9,14 +15,26 @@ class PersoonBase(BaseModel):
 
 
 class PersoonCreate(PersoonBase):
-    pass
+    organisaties: List[OrganisatieRef] | None = None
+    zichtbaarheid: ZichtbaarheidEnum = ZichtbaarheidEnum.publiek
 
-
-class SystemFields(BaseModel):
-    updated_at: datetime
-    updated_by: str
+    @field_validator("organisaties")
+    @classmethod
+    def validate_organisaties(cls, value):
+        if value is None:
+            return value
+        ids = [getattr(ref, "id") for ref in value]
+        duplicates = set([oid for oid in ids if ids.count(oid) > 1])
+        if duplicates:
+            raise ValueError(
+                f"Duplicate organisatie ids are not allowed. Duplicates: {sorted(duplicates)}"
+            )
+        return value
 
 
 class PersoonResponse(PersoonBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     systemfields: SystemFields
+    organisaties: List[OrganisatieSummary] | None = None
+    zichtbaarheid: ZichtbaarheidEnum

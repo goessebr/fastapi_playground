@@ -1,10 +1,4 @@
-from app.data.db.dao.base import BaseDAO
-
-
 class CommonService:
-    def __init__(self, dao: BaseDAO):
-        self.dao = dao
-
     def set_system_fields_new_entry(self, model_dump: dict, created_by: dict) -> None:
         # model_dump.setdefault("created_by", created_by["username"])  # voor later
         self.set_system_fields_existing_entry(model_dump=model_dump, updated_by=created_by)

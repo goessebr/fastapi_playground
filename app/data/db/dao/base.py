@@ -1,16 +1,11 @@
-import datetime
-from zoneinfo import ZoneInfo
-
-from app.data.db.base import Base as ORMBase
-from datetime import datetime
-
-from sqlalchemy.ext.asyncio.session import AsyncSession
+from abc import ABC
 
 
-class BaseDAO:
-    def __init__(self, db: AsyncSession):
-        self.db = db
+class BaseDAO(ABC):
+    """
+    Abstract base class for all Data Access Objects (DAOs).
 
-    def set_db_system_fields(self, orm_object: ORMBase) -> None:
-        orm_object.updated_at = datetime.now(ZoneInfo("Europe/Brussels"))
-        orm_object.updated_by = getattr(orm_object, "updated_by", None) or "ongekend"
+    Serves purely as a shared parent type for type-hinting and DI/registry
+    patterns. Intended to be subclassed; contains no concrete behavior.
+    """
+    pass
