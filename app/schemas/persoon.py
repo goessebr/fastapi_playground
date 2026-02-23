@@ -1,8 +1,13 @@
+from typing import Annotated
+from typing import Any
+
 from pydantic import BaseModel
+from pydantic import Discriminator
 from pydantic import Field
 from pydantic import ConfigDict
 from typing import List
 
+from pydantic import Tag
 from pydantic import field_validator
 
 from app.enums import ZichtbaarheidEnum
@@ -32,9 +37,40 @@ class PersoonCreate(PersoonBase):
         return value
 
 
-class PersoonResponse(PersoonBase):
+class PersoonResponseBase(PersoonBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+    zichtbaarheid: ZichtbaarheidEnum
+
+class PersoonResponseFull(PersoonResponseBase):
     systemfields: SystemFields
     organisaties: List[OrganisatieSummary] | None = None
-    zichtbaarheid: ZichtbaarheidEnum
+
+
+class PersoonResponseAnoniem(PersoonResponseBase):
+    @field_validator("voornaam", mode="before")
+    @classmethod
+    def set_voornaam_anoniem(cls, value):
+        return "Anoniem"
+
+
+def _discriminator_key(data: Any) -> str:
+    return "persoon_anoniem"  # todo afhankelijk van de rechten persoon_volledig tonen
+    # role = _get_role().value
+    # if isinstance(data, dict):
+    #     premie_type = data.get("type", "")
+    #     existing = current_premie.get()
+    #     if existing and existing.id == 2:
+    #         role = "owner"
+    # else:
+    #     premie_type = getattr(data, "type", "")
+    #     if hasattr(data, "id") and data.id == 2:
+    #         role = "owner"
+    # return f"{role}_{premie_type}"
+
+
+PersoonResponse = Annotated[
+    Annotated[PersoonResponseFull, Tag("persoon_volledig")]
+    | Annotated[PersoonResponseAnoniem, Tag("persoon_anoniem")],
+    Discriminator(_discriminator_key),
+]
