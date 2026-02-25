@@ -59,3 +59,26 @@ Accept: application/json
 # GET persoon by id 999: expect 404
 GET http://localhost:8000/personen/999
 Accept: application/json
+
+###
+# GET private persoon: expect 401
+GET http://localhost:8000/personen/2
+Accept: application/json
+
+###
+# GET private persoon: expect 403
+GET http://localhost:8000/personen/2
+Accept: application/json
+X-User-Role: aangemeld
+
+###
+# GET private persoon: expect 200 met beperkte gegevens
+GET http://localhost:8000/personen/2
+Accept: application/json
+X-User-Role: basic
+
+###
+# GET private persoon: expect 200 met alle gegevens
+GET http://localhost:8000/personen/2
+Accept: application/json
+X-User-Role: admin
