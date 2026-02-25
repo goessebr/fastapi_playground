@@ -6,6 +6,8 @@ from app.core.config import get_settings
 from app.core.security import decode_access_token
 from app.data.db.dao.persoon import PersoonDAO
 from app.data.db.session import get_db as _get_db
+from app.presenters.persoon import PersoonPresenter
+from app.security.auth import get_current_user as _get_current_user
 from app.services import CommonService
 from app.services import PersoonService
 from app.services import OrganisatieService
@@ -14,33 +16,15 @@ from app.services import OrganisatieService
 from app.data.db.dao.organisatie import OrganisatieDAO
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
+persoon_presenter = PersoonPresenter()
 
 
 get_db = _get_db # Re-export the data-layer dependency for API use.
-
+get_current_user = _get_current_user # Re-export the auth dependency for API use.
 
 def get_settings_dep():
     """Dependency that returns the cached Settings instance."""
     return get_settings()
-
-
-async def get_current_user() -> dict:
-    return {
-        "username": "demo_user",
-        "scopes": ["me", "items"],
-    }
-
-# async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
-#     """Very small placeholder dependency that decodes a JWT and returns the token payload.
-#
-#     Replace with a real user lookup in your application.
-#     """
-#     payload = decode_access_token(token)
-#     if not payload:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-#     return payload
-
-
 
 def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
     return PersoonDAO(db)
@@ -57,3 +41,6 @@ def get_persoon_service(common: CommonService = Depends(get_common_service), rep
 
 def get_organisatie_service(common: CommonService = Depends(get_common_service), repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> OrganisatieService:
     return OrganisatieService(common, repo)
+
+def get_persoon_presenter() -> PersoonPresenter:
+    return persoon_presenter

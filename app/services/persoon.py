@@ -5,14 +5,17 @@ from app.data.db.models.persoon import Persoon
 from app.schemas.persoon import PersoonCreate
 
 from app.exceptions.persoon import PersoonExistsException
+from app.security.persoon import PersoonPolicies
+from app.services.base import BaseService
 from app.services.base import CommonService
 
 
-class PersoonService:
+class PersoonService(BaseService):
     def __init__(self, common_service: CommonService, dao: PersoonDAO, org_dao: OrganisatieDAO):
         self.common_service = common_service
         self.dao = dao
         self.org_dao = org_dao
+        self.policies = PersoonPolicies()
 
     async def get_persoon(self, persoon_id: int) -> Persoon | None:
         return await self.dao.get_by_id(persoon_id)

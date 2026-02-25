@@ -2,11 +2,12 @@ from app.data.db.dao.organisatie import OrganisatieDAO
 from app.data.db.models.organisatie import Organisatie
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate
+from app.services.base import BaseService
 
 from app.services.base import CommonService
 
 
-class OrganisatieService:
+class OrganisatieService(BaseService):
     def __init__(self, common_service: CommonService, dao: OrganisatieDAO):
         self.common_service = common_service
         self.dao = dao
