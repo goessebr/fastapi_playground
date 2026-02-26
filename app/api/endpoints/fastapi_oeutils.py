@@ -34,7 +34,7 @@ def assert_object_exists(
 def validate_read_access(
     service: BaseService,
     object: ORMBase,
-    current_user: dict,
+    current_user: dict | None = None,
 ) -> None:
     """
     Raise HTTP exceptions if object is not found or user doesn't have read access to it.
@@ -65,7 +65,7 @@ def validate_edit_access(
 def validate_access(
     assert_method: callable,
     object: ORMBase,
-    current_user: dict,
+    current_user: dict | None = None,
 ) -> None:
     """
     Raise HTTP exceptions if a user doesn't have access to an object.

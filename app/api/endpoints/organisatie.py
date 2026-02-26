@@ -2,12 +2,17 @@ from fastapi import HTTPException, APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user
 from app.api.dependencies import get_organisatie_service
+from app.api.endpoints.fastapi_oeutils import assert_object_exists
 from app.api.endpoints.fastapi_oeutils import validate_access
+from app.api.endpoints.fastapi_oeutils import validate_read_access
+from app.exceptions.organisatie import EXC_MSG_ORGANISATIE_NOT_FOUND
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
 from app.services.organisatie import OrganisatieService
 
 from app.core.logging import get_logger
+from app.api.responses import RESPONSES_GET_ORGANISATIE
+from app.api.responses import RESPONSES_POST_ORGANISATIE
 
 LOG = get_logger(__name__)
 
@@ -18,16 +23,7 @@ router = APIRouter()
     "",
     response_model=OrganisatieResponse,
     status_code=status.HTTP_201_CREATED,
-    responses={
-        400: {
-            "description": "Validatiefout bij het aanmaken van organisatie",
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Organisatie bestaat reeds"}
-                }
-            },
-        }
-    },
+    responses=RESPONSES_POST_ORGANISATIE
 )
 async def create_organisatie(
     organisatie_data: OrganisatieCreate,
@@ -49,19 +45,10 @@ async def create_organisatie(
 @router.get(
     "/{organisatie_id}",
     response_model=OrganisatieResponse,
-    responses={
-        404: {
-            "description": "Organisatie niet gevonden",
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Organisatie niet gevonden"}
-                }
-            },
-        }
-    },
+    responses=RESPONSES_GET_ORGANISATIE
 )
 async def get_organisatie(organisatie_id: int, service: OrganisatieService = Depends(get_organisatie_service)):
     organisatie = await service.get_organisatie(organisatie_id)
-    validate_access(service, organisatie, current_user, msg_404=EXC_MSG_PERSOON_NOT_FOUND)
-    # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organisatie niet gevonden")
+    assert_object_exists(organisatie, msg_404=EXC_MSG_ORGANISATIE_NOT_FOUND)
+    validate_read_access(service, organisatie)
     return organisatie
