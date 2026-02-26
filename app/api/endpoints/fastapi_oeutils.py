@@ -13,18 +13,18 @@ if TYPE_CHECKING:
     from app.services.base import BaseService
 
 
-def assert_object_exists(
-    object: ORMBase,
-    msg_404: str = "Object niet gevonden",
+def assert_resource_exists(
+    resource: ORMBase,
+    msg_404: str = "resource niet gevonden",
 ) -> None:
     """
-    Raise HTTP 404 exception if object is not found.
+    Raise HTTP 404 exception if resource is not found.
 
-    :param object:
+    :param resource:
     :param msg_404:
     :return:
     """
-    if not object:
+    if not resource:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=msg_404,
@@ -33,51 +33,50 @@ def assert_object_exists(
 
 def validate_read_access(
     service: BaseService,
-    object: ORMBase,
+    resource: ORMBase,
     current_user: dict | None = None,
 ) -> None:
     """
-    Raise HTTP exceptions if object is not found or user doesn't have read access to it.
+    Raise HTTP exceptions if resource is not found or user doesn't have read access to it.
 
     :param service:
-    :param object:
+    :param resource:
     :param current_user:
     :return:
     """
-    validate_access(service.policies.assert_view_access, object, current_user)
+    validate_access(service.policies.assert_view_access, resource, current_user)
 
 def validate_edit_access(
     service: BaseService,
-    object: ORMBase,
+    resource: ORMBase,
     current_user: dict,
 ) -> None:
     """
-    Raise HTTP exceptions if object is not found or user doesn't have read access to it.
+    Raise HTTP exceptions if resource is not found or user doesn't have read access to it.
 
     :param service:
-    :param object:
+    :param resource:
     :param current_user:
     :return:
     """
-    validate_access(service.policies.assert_edit_access, object, current_user)
+    validate_access(service.policies.assert_edit_access, resource, current_user)
 
 
 def validate_access(
     assert_method: callable,
-    object: ORMBase,
+    resource: ORMBase,
     current_user: dict | None = None,
 ) -> None:
     """
-    Raise HTTP exceptions if a user doesn't have access to an object.
+    Raise HTTP exceptions if a user doesn't have access to a resource.
 
-    :param access_type:
-    :param service:
-    :param object:
+    :param assert_method:
+    :param resource:
     :param current_user:
     :return:
     """
     try:
-        assert_method(object, current_user)
+        assert_method(resource, current_user)
     except UnauthenticatedException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
