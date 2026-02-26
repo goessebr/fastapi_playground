@@ -13,11 +13,6 @@ if TYPE_CHECKING:
     from app.services.base import BaseService
 
 
-class AccessTypes:
-    VIEW = "view"
-    EDIT = "edit"
-
-
 def assert_object_exists(
     object: ORMBase,
     msg_404: str = "Object niet gevonden",
@@ -36,15 +31,44 @@ def assert_object_exists(
         )
     return
 
-
-def validate_access(
-    access_type: str,
+def validate_read_access(
     service: BaseService,
     object: ORMBase,
     current_user: dict,
 ) -> None:
     """
-    Raise HTTP exceptions if object is not found or user doesn't have access to it.
+    Raise HTTP exceptions if object is not found or user doesn't have read access to it.
+
+    :param service:
+    :param object:
+    :param current_user:
+    :return:
+    """
+    validate_access(service.policies.assert_view_access, object, current_user)
+
+def validate_edit_access(
+    service: BaseService,
+    object: ORMBase,
+    current_user: dict,
+) -> None:
+    """
+    Raise HTTP exceptions if object is not found or user doesn't have read access to it.
+
+    :param service:
+    :param object:
+    :param current_user:
+    :return:
+    """
+    validate_access(service.policies.assert_edit_access, object, current_user)
+
+
+def validate_access(
+    assert_method: callable,
+    object: ORMBase,
+    current_user: dict,
+) -> None:
+    """
+    Raise HTTP exceptions if a user doesn't have access to an object.
 
     :param access_type:
     :param service:
@@ -53,7 +77,7 @@ def validate_access(
     :return:
     """
     try:
-        service.policies.assert_access(access_type, object, current_user)
+        assert_method(object, current_user)
     except UnauthenticatedException as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
