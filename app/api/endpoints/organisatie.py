@@ -2,6 +2,7 @@ from fastapi import HTTPException, APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user
 from app.api.dependencies import get_organisatie_service
+from app.api.endpoints.fastapi_oeutils import validate_access
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
 from app.services.organisatie import OrganisatieService
@@ -61,6 +62,6 @@ async def create_organisatie(
 )
 async def get_organisatie(organisatie_id: int, service: OrganisatieService = Depends(get_organisatie_service)):
     organisatie = await service.get_organisatie(organisatie_id)
-    if not organisatie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organisatie niet gevonden")
+    validate_access(service, organisatie, current_user, msg_404=EXC_MSG_PERSOON_NOT_FOUND)
+    # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organisatie niet gevonden")
     return organisatie
