@@ -2,6 +2,7 @@
 POST http://localhost:8000/organisaties
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/organisatie_create.json
 
@@ -10,6 +11,7 @@ Content-Type: application/json
 POST http://localhost:8000/personen
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/persoon_create.json
 
@@ -18,6 +20,7 @@ Content-Type: application/json
 POST http://localhost:8000/personen
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/persoon_create_privaat.json
 
@@ -26,6 +29,7 @@ Content-Type: application/json
 POST http://localhost:8000/personen
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/persoon_create_no_organisatie.json
 
@@ -34,6 +38,7 @@ Content-Type: application/json
 POST http://localhost:8000/personen
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/persoon_create_400.json
 
@@ -42,6 +47,7 @@ Content-Type: application/json
 POST http://localhost:8000/personen
 Accept: application/json
 Content-Type: application/json
+X-User-Role: admin
 
 < ./requests_fixtures/persoon_create_400_2.json
 
