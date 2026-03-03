@@ -9,7 +9,6 @@ from app.api.dependencies import get_persoon_presenter
 from app.api.dependencies import get_persoon_service
 from app.api.endpoints.auth import CurrentUserDependency
 from app.api.endpoints.fastapi_oeutils import assert_resource_exists
-from app.api.endpoints.fastapi_oeutils import validate_read_access
 from app.api.responses import RESPONSES_GET_PERSOON
 from app.api.responses import RESPONSES_POST_PERSOON
 from app.exceptions.persoon import EXC_MSG_PERSOON_EXISTS
@@ -63,5 +62,4 @@ async def get_persoon(
 ):
     persoon = await service.get_persoon(persoon_id)
     assert_resource_exists(persoon, msg_404=EXC_MSG_PERSOON_NOT_FOUND)
-    validate_read_access(service, persoon, current_user)
     return presenter.present(persoon, current_user)

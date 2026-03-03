@@ -3,7 +3,6 @@ from fastapi import HTTPException, APIRouter, Depends, status
 from app.api.dependencies import get_current_user
 from app.api.dependencies import get_organisatie_service
 from app.api.endpoints.fastapi_oeutils import assert_resource_exists
-from app.api.endpoints.fastapi_oeutils import validate_read_access
 from app.exceptions.organisatie import EXC_MSG_ORGANISATIE_NOT_FOUND
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
@@ -53,5 +52,4 @@ async def get_organisatie(
 ):
     organisatie = await service.get_organisatie(organisatie_id)
     assert_resource_exists(organisatie, msg_404=EXC_MSG_ORGANISATIE_NOT_FOUND)
-    validate_read_access(service, organisatie)
     return organisatie
