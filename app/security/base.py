@@ -1,6 +1,7 @@
 from abc import ABC
 
 from app.data.db.base import Base as ORMBase
+from app.security.auth import CurrentUser
 
 
 class PoliciesBase(ABC):
