@@ -6,20 +6,20 @@ from app.security.base import PoliciesBase
 
 
 class OrganisatiePolicies(PoliciesBase):
-    def _can_view(self, organisatie: Organisatie, user: CurrentUser) -> bool:
+    async def _can_view(self, organisatie: Organisatie, user: CurrentUser) -> bool:
         return "organisaties:read" in user.scopes
 
-    def _can_edit(self, organisatie: Organisatie, user: CurrentUser) -> bool:
-        return "organisaties:edit" in user.scopes
+    async def _can_create(self, organisatie: Organisatie, user: CurrentUser) -> bool:
+        return "organisaties:write" in user.scopes
 
-    def assert_view_access(self, organisatie: Organisatie, user: CurrentUser):
-        if user.username is None:
+    async def assert_view_access(self, organisatie: Organisatie, user: CurrentUser):
+        if not user.authenticated:
             raise OrganisatieUnauthenticatedException
         if not self._can_view(organisatie, user):
             raise OrganisatiePermissionDenied
 
-    def assert_edit_access(self, organisatie: Organisatie, user: CurrentUser):
-        if user.username is None:
+    async def assert_create_access(self, organisatie: Organisatie, user: CurrentUser):
+        if not user.authenticated:
             raise OrganisatieUnauthenticatedException
-        if not self._can_edit(organisatie, user):
+        if not self._can_create(organisatie, user):
             raise OrganisatiePermissionDenied

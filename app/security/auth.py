@@ -11,6 +11,7 @@ class CurrentUser(BaseModel):
     sub: str
     username: str
     scopes: list[str]
+    authenticated: bool
 
 
 async def get_current_user(
@@ -31,7 +32,7 @@ async def get_current_user(
     elif x_user_role == "basic":
         scopes = ["me", "personen:read-basic"]
     if x_user_role in ("admin", "basic", "aangemeld"):
-        return CurrentUser(sub="demo_user_id", username="demo_user", scopes=scopes)
+        return CurrentUser(sub="demo_user_id", username="demo_user", scopes=scopes, authenticated=True)
     return CurrentUser(
-        sub="anoniem", username="anoniem", scopes=[]
+        sub="anoniem", username="anoniem", scopes=[], authenticated=False
     )  # unauthenticated users

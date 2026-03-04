@@ -7,24 +7,24 @@ from app.security.base import PoliciesBase
 
 
 class PersoonPolicies(PoliciesBase):
-    def _can_view(self, persoon: Persoon, user: CurrentUser) -> CurrentUser:
+    async def _can_view(self, persoon: Persoon, user: CurrentUser) -> bool:
         if persoon.zichtbaarheid == ZichtbaarheidEnum.publiek:
             return True
         return "personen:read-basic" in user.scopes
 
-    def _can_edit(self, persoon: Persoon, user: CurrentUser) -> CurrentUser:
-        # if persoon.dataverantwoordelijke != user["dataverantwoordelijke"]:
+    async def _can_create(self, persoon: Persoon, user: CurrentUser) -> bool:
+        # if persoon.dataverantwoordelijke != user.dataverantwoordelijke:
         #     return False
-        return "personen:edit" in user.scopes
+        return "personen:write" in user.scopes
 
-    def assert_view_access(self, persoon: Persoon, user: CurrentUser):
-        if user.username is None:
+    async def assert_view_access(self, persoon: Persoon, user: CurrentUser):
+        if not user.authenticated:
             raise PersoonUnauthenticatedException
         if not self._can_view(persoon, user):
             raise PersoonPermissionDenied
 
-    def assert_edit_access(self, persoon: Persoon, user: CurrentUser):
-        if user.username is None:
+    async def assert_create_access(self, persoon: Persoon, user: CurrentUser):
+        if not user.authenticated:
             raise PersoonUnauthenticatedException
-        if not self._can_edit(persoon, user):
+        if not self._can_create(persoon, user):
             raise PersoonPermissionDenied
