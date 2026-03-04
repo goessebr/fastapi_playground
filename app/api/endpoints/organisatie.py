@@ -2,6 +2,7 @@ from fastapi import HTTPException, APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user
 from app.api.dependencies import get_organisatie_service
+from app.api.endpoints.auth import CurrentUserDependency
 from app.api.endpoints.fastapi_oeutils import assert_resource_exists
 from app.exceptions.organisatie import EXC_MSG_ORGANISATIE_NOT_FOUND
 from app.exceptions.organisatie import OrganisatieExistsException
@@ -26,8 +27,8 @@ router = APIRouter()
 )
 async def create_organisatie(
     organisatie_data: OrganisatieCreate,
+    current_user: CurrentUserDependency,
     service: OrganisatieService = Depends(get_organisatie_service),
-    current_user: CurrentUser = Depends(get_current_user),
 ):
     try:
         created = await service.create_organisatie(
