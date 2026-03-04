@@ -2,6 +2,7 @@ from app.data.db.dao.organisatie import OrganisatieDAO
 from app.data.db.models.organisatie import Organisatie
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate
+from app.security.auth import CurrentUser
 from app.services.base import BaseService
 
 from app.services.base import CommonService
@@ -16,7 +17,7 @@ class OrganisatieService(BaseService):
         return await self.dao.get_by_id(organisatie_id)
 
     async def create_organisatie(
-        self, organisatie_schema: OrganisatieCreate, created_by: dict
+        self, organisatie_schema: OrganisatieCreate, created_by: CurrentUser
     ) -> Organisatie:
         existing = await self.dao.get_by_naam(organisatie_schema.naam)
         if existing:
