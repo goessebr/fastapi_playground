@@ -16,6 +16,6 @@ class CommonService:
         )
 
     def set_system_fields_existing_entry(
-        self, model_dump: dict, updated_by: CurrentUser.username
+        self, model_dump: dict, updated_by: CurrentUser
     ) -> None:
-        model_dump.setdefault("updated_by", updated_by)
+        model_dump.setdefault("updated_by", updated_by.username)
