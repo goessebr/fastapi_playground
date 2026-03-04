@@ -35,4 +35,3 @@ start de development server met reload:
 ```bash
 uv run fastapi dev app/main.py --reload
 ```
->>>>>>> develop
