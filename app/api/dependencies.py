@@ -19,6 +19,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 persoon_presenter = PersoonPresenter()
 
 
+##########################################
+### General dependencies               ###
+##########################################
 get_db = _get_db # Re-export the data-layer dependency for API use.
 get_current_user = _get_current_user # Re-export the auth dependency for API use.
 
@@ -26,21 +29,27 @@ def get_settings_dep():
     """Dependency that returns the cached Settings instance."""
     return get_settings()
 
-def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
-    return PersoonDAO(db)
-
-# Organisatie dependency factories
-def get_organisatie_repository(db: AsyncSession = Depends(get_db)) -> OrganisatieDAO:
-    return OrganisatieDAO(db)
-
 def get_common_service() -> CommonService:
     return CommonService()
+
+##########################################
+### Persoon dependencies               ###
+##########################################
+
+def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
+    return PersoonDAO(db)
 
 def get_persoon_service(common: CommonService = Depends(get_common_service), repo: PersoonDAO = Depends(get_persoon_repository), org_repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> PersoonService:
     return PersoonService(common, repo, org_repo)
 
-def get_organisatie_service(common: CommonService = Depends(get_common_service), repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> OrganisatieService:
-    return OrganisatieService(common, repo)
-
 def get_persoon_presenter() -> PersoonPresenter:
     return persoon_presenter
+
+##########################################
+### Organisatie dependencies           ###
+##########################################
+def get_organisatie_repository(db: AsyncSession = Depends(get_db)) -> OrganisatieDAO:
+    return OrganisatieDAO(db)
+
+def get_organisatie_service(common: CommonService = Depends(get_common_service), repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> OrganisatieService:
+    return OrganisatieService(common, repo)
