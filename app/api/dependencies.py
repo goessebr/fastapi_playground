@@ -1,11 +1,16 @@
+from typing import Annotated
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.core.security import decode_access_token
 from app.data.db.dao.persoon import PersoonDAO
+from app.data.db.models import Organisatie
+from app.data.db.models import Persoon
 from app.data.db.session import get_db as _get_db
+from app.exceptions import EXC_MSG_ORGANISATIE_NOT_FOUND
+from app.exceptions import EXC_MSG_PERSOON_NOT_FOUND
 from app.presenters.persoon import PersoonPresenter
 from app.security.auth import get_current_user as _get_current_user
 from app.services import CommonService
@@ -22,28 +27,18 @@ persoon_presenter = PersoonPresenter()
 ##########################################
 ### General dependencies               ###
 ##########################################
-get_db = _get_db # Re-export the data-layer dependency for API use.
-get_current_user = _get_current_user # Re-export the auth dependency for API use.
+get_db = _get_db  # Re-export the data-layer dependency for API use.
+get_current_user = _get_current_user  # Re-export the auth dependency for API use.
+
 
 def get_settings_dep():
     """Dependency that returns the cached Settings instance."""
     return get_settings()
 
+
 def get_common_service() -> CommonService:
     return CommonService()
 
-##########################################
-### Persoon dependencies               ###
-##########################################
-
-def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
-    return PersoonDAO(db)
-
-def get_persoon_service(common: CommonService = Depends(get_common_service), repo: PersoonDAO = Depends(get_persoon_repository), org_repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> PersoonService:
-    return PersoonService(common, repo, org_repo)
-
-def get_persoon_presenter() -> PersoonPresenter:
-    return persoon_presenter
 
 ##########################################
 ### Organisatie dependencies           ###
@@ -51,5 +46,65 @@ def get_persoon_presenter() -> PersoonPresenter:
 def get_organisatie_repository(db: AsyncSession = Depends(get_db)) -> OrganisatieDAO:
     return OrganisatieDAO(db)
 
-def get_organisatie_service(common: CommonService = Depends(get_common_service), repo: OrganisatieDAO = Depends(get_organisatie_repository)) -> OrganisatieService:
+
+def get_organisatie_service(
+    common: CommonService = Depends(get_common_service),
+    repo: OrganisatieDAO = Depends(get_organisatie_repository),
+) -> OrganisatieService:
     return OrganisatieService(common, repo)
+
+
+##########################################
+### Persoon dependencies               ###
+##########################################
+
+
+def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
+    return PersoonDAO(db)
+
+
+def get_persoon_service(
+    common: CommonService = Depends(get_common_service),
+    repo: PersoonDAO = Depends(get_persoon_repository),
+    org_repo: OrganisatieDAO = Depends(get_organisatie_repository),
+) -> PersoonService:
+    return PersoonService(common, repo, org_repo)
+
+
+def get_persoon_presenter() -> PersoonPresenter:
+    return persoon_presenter
+
+
+async def get_existing_persoon(
+    persoon_id: int,  # Param
+    service: PersoonService = Depends(get_persoon_service),
+) -> Persoon:
+    persoon = await service.get_persoon(persoon_id)
+    if persoon is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=EXC_MSG_PERSOON_NOT_FOUND,
+        )
+    return persoon
+
+
+async def get_existing_organisatie(
+    organisatie_id: int,  # Param
+    service: OrganisatieService = Depends(get_organisatie_service),
+) -> Organisatie:
+    organisatie = await service.get_organisatie(organisatie_id)
+    if organisatie is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=EXC_MSG_ORGANISATIE_NOT_FOUND,
+        )
+    return organisatie
+
+
+##########################################
+### Annotated type-aliases             ###
+##########################################
+ExistingPersoonDependency = Annotated[Persoon, Depends(get_existing_persoon)]
+ExistingOrganisatieDependency = Annotated[
+    Organisatie, Depends(get_existing_organisatie)
+]

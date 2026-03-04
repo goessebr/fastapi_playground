@@ -1,13 +1,10 @@
 from fastapi import HTTPException, APIRouter, Depends, status
 
-from app.api.dependencies import get_current_user
+from app.api.dependencies import ExistingOrganisatieDependency
 from app.api.dependencies import get_organisatie_service
 from app.api.endpoints.auth import CurrentUserDependency
-from app.api.endpoints.fastapi_oeutils import assert_resource_exists
-from app.exceptions.organisatie import EXC_MSG_ORGANISATIE_NOT_FOUND
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
-from app.security.auth import CurrentUser
 from app.services.organisatie import OrganisatieService
 
 from app.core.logging import get_logger
@@ -50,8 +47,6 @@ async def create_organisatie(
     responses=RESPONSES_GET_ORGANISATIE,
 )
 async def get_organisatie(
-    organisatie_id: int, service: OrganisatieService = Depends(get_organisatie_service)
+    existing_organisatie: ExistingOrganisatieDependency,
 ):
-    organisatie = await service.get_organisatie(organisatie_id)
-    assert_resource_exists(organisatie, msg_404=EXC_MSG_ORGANISATIE_NOT_FOUND)
-    return organisatie
+    return existing_organisatie

@@ -5,14 +5,13 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import status
 
+from app.api.dependencies import ExistingPersoonDependency
 from app.api.dependencies import get_persoon_presenter
 from app.api.dependencies import get_persoon_service
 from app.api.endpoints.auth import CurrentUserDependency
-from app.api.endpoints.fastapi_oeutils import assert_resource_exists
 from app.api.responses import RESPONSES_GET_PERSOON
 from app.api.responses import RESPONSES_POST_PERSOON
 from app.exceptions.persoon import EXC_MSG_PERSOON_EXISTS
-from app.exceptions.persoon import EXC_MSG_PERSOON_NOT_FOUND
 from app.exceptions.persoon import PersoonExistsException
 from app.presenters.persoon import PersoonPresenter
 from app.schemas.persoon import PersoonCreate
@@ -55,11 +54,8 @@ async def create_persoon(
     responses=RESPONSES_GET_PERSOON,
 )
 async def get_persoon(
-    persoon_id: int,
-    service: Annotated[PersoonService, Depends(get_persoon_service)],
     current_user: CurrentUserDependency,
+    existing_persoon: ExistingPersoonDependency,
     presenter: PersoonPresenter = Depends(get_persoon_presenter),
 ):
-    persoon = await service.get_persoon(persoon_id)
-    assert_resource_exists(persoon, msg_404=EXC_MSG_PERSOON_NOT_FOUND)
-    return presenter.present(persoon, current_user)
+    return presenter.present(existing_persoon, current_user)
