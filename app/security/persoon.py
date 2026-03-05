@@ -12,7 +12,12 @@ class PersoonPolicies(PoliciesBase):
             return True
         return "personen:read-basic" in user.scopes
 
-    async def _can_create(self, persoon: Persoon, user: CurrentUser) -> bool:
+    async def _can_update(self, persoon: Persoon, user: CurrentUser) -> bool:
+        # if persoon.dataverantwoordelijke != user.dataverantwoordelijke:
+        #     return False
+        return "personen:write" in user.scopes
+
+    async def _can_create(self, user: CurrentUser) -> bool:
         # if persoon.dataverantwoordelijke != user.dataverantwoordelijke:
         #     return False
         return "personen:write" in user.scopes
@@ -23,8 +28,14 @@ class PersoonPolicies(PoliciesBase):
         if not self._can_view(persoon, user):
             raise PersoonPermissionDenied
 
-    async def assert_create_access(self, persoon: Persoon, user: CurrentUser):
+    async def assert_update_access(self, persoon: Persoon, user: CurrentUser):
         if not user.authenticated:
             raise PersoonUnauthenticatedException
-        if not self._can_create(persoon, user):
+        if not self._can_update(persoon, user):
+            raise PersoonPermissionDenied
+
+    async def assert_create_access(self, user: CurrentUser):
+        if not user.authenticated:
+            raise PersoonUnauthenticatedException
+        if not self._can_create(user):
             raise PersoonPermissionDenied

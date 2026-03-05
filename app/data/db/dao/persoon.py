@@ -32,4 +32,4 @@ class PersoonDAO(BaseDAO):
         return result.scalars().first()
 
     async def save(self, persoon: Persoon) -> Persoon:
-        return await self.common.save(orm_object=persoon)
+        return await self.common.save(orm_object=persoon, attribute_names=["organisaties"])

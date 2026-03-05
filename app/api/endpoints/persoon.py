@@ -7,8 +7,8 @@ from fastapi import status
 
 from app.api.dependencies import CurrentUserDependency
 from app.api.dependencies import ExistingPersoonDependency
+from app.api.dependencies import assert_persoon_create_access
 from app.api.dependencies import assert_persoon_view_access
-from app.api.dependencies import assert_persoon_write_access
 from app.api.dependencies import get_persoon_presenter
 from app.api.dependencies import get_persoon_service
 from app.api.responses import RESPONSES_GET_PERSOON
@@ -33,7 +33,7 @@ router = APIRouter()
     response_model=PersoonResponse,
     status_code=status.HTTP_201_CREATED,
     responses=RESPONSES_POST_PERSOON,
-    dependencies=[Depends(assert_persoon_write_access)],
+    dependencies=[Depends(assert_persoon_create_access)],
 )
 async def create_persoon(
     persoon_data: PersoonCreate,

@@ -2,8 +2,8 @@ from fastapi import HTTPException, APIRouter, Depends, status
 
 from app.api.dependencies import CurrentUserDependency
 from app.api.dependencies import ExistingOrganisatieDependency
+from app.api.dependencies import assert_organisatie_create_access
 from app.api.dependencies import assert_organisatie_view_access
-from app.api.dependencies import assert_organisatie_write_access
 from app.api.dependencies import get_organisatie_service
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
@@ -23,7 +23,7 @@ router = APIRouter()
     response_model=OrganisatieResponse,
     status_code=status.HTTP_201_CREATED,
     responses=RESPONSES_POST_ORGANISATIE,
-    dependencies=[Depends(assert_organisatie_write_access)],
+    dependencies=[Depends(assert_organisatie_create_access)],
 )
 async def create_organisatie(
     organisatie_data: OrganisatieCreate,

@@ -90,12 +90,19 @@ def assert_organisatie_view_access(
     policy.assert_view_access(organisatie=organisatie, user=current_user)
 
 
-def assert_organisatie_write_access(
+def assert_organisatie_update_access(
     current_user: CurrentUserDependency,
     organisatie: ExistingOrganisatieDependency,
     policy: OrganisatiePolicies = Depends(get_organisatie_policy),
 ) -> None:
-    policy.assert_create_access(organisatie=organisatie, user=current_user)
+    policy.assert_update_access(organisatie=organisatie, user=current_user)
+
+
+def assert_organisatie_create_access(
+    current_user: CurrentUserDependency,
+    policy: OrganisatiePolicies = Depends(get_organisatie_policy),
+) -> None:
+    policy.assert_create_access(user=current_user)
 
 
 def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
@@ -115,7 +122,7 @@ def get_persoon_presenter() -> PersoonPresenter:
 
 
 async def get_existing_persoon(
-    persoon_id: int,  # Param
+    id: int,  # Param
     service: PersoonService = Depends(get_persoon_service),
 ) -> Persoon:
     persoon = await service.get_persoon(persoon_id)
@@ -144,9 +151,16 @@ def assert_persoon_view_access(
     policy.assert_view_access(persoon=persoon, user=current_user)
 
 
-def assert_persoon_write_access(
+def assert_persoon_create_access(
+    current_user: CurrentUserDependency,
+    policy: PersoonPolicies = Depends(get_persoon_policy),
+) -> None:
+    policy.assert_create_access(user=current_user)
+
+
+def assert_persoon_update_access(
     current_user: CurrentUserDependency,
     persoon: ExistingPersoonDependency,
     policy: PersoonPolicies = Depends(get_persoon_policy),
 ) -> None:
-    policy.assert_create_access(persoon=persoon, user=current_user)
+    policy.assert_update_access(persoon=persoon, user=current_user)
