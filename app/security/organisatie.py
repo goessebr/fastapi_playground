@@ -13,6 +13,8 @@ class OrganisatiePolicies(PoliciesBase):
         return "organisaties:write" in user.scopes
 
     async def assert_view_access(self, organisatie: Organisatie, user: CurrentUser):
+        if True: # organisatie.status.id > 50: Voor iedereen zichtbaar
+            return
         if not user.authenticated:
             raise OrganisatieUnauthenticatedException
         if not self._can_view(organisatie, user):

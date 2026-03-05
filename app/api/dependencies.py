@@ -12,6 +12,9 @@ from app.data.db.session import get_db as _get_db
 from app.exceptions import EXC_MSG_ORGANISATIE_NOT_FOUND
 from app.exceptions import EXC_MSG_PERSOON_NOT_FOUND
 from app.presenters.persoon import PersoonPresenter
+from app.security import OrganisatiePolicies
+from app.security import PersoonPolicies
+from app.security.auth import CurrentUser
 from app.security.auth import get_current_user as _get_current_user
 from app.services import CommonService
 from app.services import PersoonService
@@ -29,6 +32,9 @@ persoon_presenter = PersoonPresenter()
 ##########################################
 get_db = _get_db  # Re-export the data-layer dependency for API use.
 get_current_user = _get_current_user  # Re-export the auth dependency for API use.
+CurrentUserDependency = Annotated[
+    CurrentUser, Depends(get_current_user)
+]  # Type-alias for cleaner annotations
 
 
 def get_settings_dep():
@@ -54,9 +60,42 @@ def get_organisatie_service(
     return OrganisatieService(common, repo)
 
 
-##########################################
-### Persoon dependencies               ###
-##########################################
+async def get_existing_organisatie(
+    organisatie_id: int,  # Param
+    service: OrganisatieService = Depends(get_organisatie_service),
+) -> Organisatie:
+    organisatie = await service.get_organisatie(organisatie_id)
+    if organisatie is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=EXC_MSG_ORGANISATIE_NOT_FOUND,
+        )
+    return organisatie
+
+
+ExistingOrganisatieDependency = Annotated[
+    Organisatie, Depends(get_existing_organisatie)
+]  # Type-alias for cleaner annotations
+
+
+def get_organisatie_policy() -> OrganisatiePolicies:
+    return OrganisatiePolicies()
+
+
+def assert_organisatie_view_access(
+    current_user: CurrentUserDependency,
+    organisatie: ExistingOrganisatieDependency,
+    policy: OrganisatiePolicies = Depends(get_organisatie_policy),
+) -> None:
+    policy.assert_view_access(organisatie=organisatie, user=current_user)
+
+
+def assert_organisatie_write_access(
+    current_user: CurrentUserDependency,
+    organisatie: ExistingOrganisatieDependency,
+    policy: OrganisatiePolicies = Depends(get_organisatie_policy),
+) -> None:
+    policy.assert_create_access(organisatie=organisatie, user=current_user)
 
 
 def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
@@ -88,23 +127,26 @@ async def get_existing_persoon(
     return persoon
 
 
-async def get_existing_organisatie(
-    organisatie_id: int,  # Param
-    service: OrganisatieService = Depends(get_organisatie_service),
-) -> Organisatie:
-    organisatie = await service.get_organisatie(organisatie_id)
-    if organisatie is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=EXC_MSG_ORGANISATIE_NOT_FOUND,
-        )
-    return organisatie
+ExistingPersoonDependency = Annotated[
+    Persoon, Depends(get_existing_persoon)
+]  # Type-alias for cleaner annotations
 
 
-##########################################
-### Annotated type-aliases             ###
-##########################################
-ExistingPersoonDependency = Annotated[Persoon, Depends(get_existing_persoon)]
-ExistingOrganisatieDependency = Annotated[
-    Organisatie, Depends(get_existing_organisatie)
-]
+def get_persoon_policy() -> PersoonPolicies:
+    return PersoonPolicies()
+
+
+def assert_persoon_view_access(
+    current_user: CurrentUserDependency,
+    persoon: ExistingPersoonDependency,
+    policy: PersoonPolicies = Depends(get_persoon_policy),
+) -> None:
+    policy.assert_view_access(persoon=persoon, user=current_user)
+
+
+def assert_persoon_write_access(
+    current_user: CurrentUserDependency,
+    persoon: ExistingPersoonDependency,
+    policy: PersoonPolicies = Depends(get_persoon_policy),
+) -> None:
+    policy.assert_create_access(persoon=persoon, user=current_user)
