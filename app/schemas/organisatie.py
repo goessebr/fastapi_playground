@@ -4,6 +4,7 @@ from app.schemas.common import SystemFields
 
 
 class OrganisatieBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     naam: str = Field(max_length=255)
 
 
@@ -12,6 +13,7 @@ class OrganisatieCreate(OrganisatieBase):
 
 
 class OrganisatieRef(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
 
 
@@ -20,6 +22,5 @@ class OrganisatieSummary(OrganisatieBase, OrganisatieRef):
 
 
 class OrganisatieResponse(OrganisatieBase):
-    model_config = ConfigDict(from_attributes=True)
     id: int
     systemfields: SystemFields

@@ -82,27 +82,27 @@ def get_organisatie_policy() -> OrganisatiePolicies:
     return OrganisatiePolicies()
 
 
-def assert_organisatie_view_access(
+async def assert_organisatie_view_access(
     current_user: CurrentUserDependency,
     organisatie: ExistingOrganisatieDependency,
     policy: OrganisatiePolicies = Depends(get_organisatie_policy),
 ) -> None:
-    policy.assert_view_access(organisatie=organisatie, user=current_user)
+    await policy.assert_view_access(organisatie=organisatie, user=current_user)
 
 
-def assert_organisatie_update_access(
+async def assert_organisatie_update_access(
     current_user: CurrentUserDependency,
     organisatie: ExistingOrganisatieDependency,
     policy: OrganisatiePolicies = Depends(get_organisatie_policy),
 ) -> None:
-    policy.assert_update_access(organisatie=organisatie, user=current_user)
+    await policy.assert_update_access(organisatie=organisatie, user=current_user)
 
 
-def assert_organisatie_create_access(
+async def assert_organisatie_create_access(
     current_user: CurrentUserDependency,
     policy: OrganisatiePolicies = Depends(get_organisatie_policy),
 ) -> None:
-    policy.assert_create_access(user=current_user)
+    await policy.assert_create_access(user=current_user)
 
 
 def get_persoon_repository(db: AsyncSession = Depends(get_db)) -> PersoonDAO:
@@ -143,24 +143,24 @@ def get_persoon_policy() -> PersoonPolicies:
     return PersoonPolicies()
 
 
-def assert_persoon_view_access(
+async def assert_persoon_view_access(
     current_user: CurrentUserDependency,
     persoon: ExistingPersoonDependency,
     policy: PersoonPolicies = Depends(get_persoon_policy),
 ) -> None:
-    policy.assert_view_access(persoon=persoon, user=current_user)
+    await policy.assert_view_access(persoon=persoon, user=current_user)
 
 
-def assert_persoon_create_access(
+async def assert_persoon_create_access(
     current_user: CurrentUserDependency,
     policy: PersoonPolicies = Depends(get_persoon_policy),
 ) -> None:
-    policy.assert_create_access(user=current_user)
+    await policy.assert_create_access(user=current_user)
 
 
-def assert_persoon_update_access(
+async def assert_persoon_update_access(
     current_user: CurrentUserDependency,
     persoon: ExistingPersoonDependency,
     policy: PersoonPolicies = Depends(get_persoon_policy),
 ) -> None:
-    policy.assert_update_access(persoon=persoon, user=current_user)
+    await policy.assert_update_access(persoon=persoon, user=current_user)

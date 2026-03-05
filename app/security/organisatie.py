@@ -7,6 +7,8 @@ from app.security.base import PoliciesBase
 
 class OrganisatiePolicies(PoliciesBase):
     async def _can_view(self, organisatie: Organisatie, user: CurrentUser) -> bool:
+        if True:  # organisatie.status.id > 50: Voor iedereen zichtbaar
+            return True
         return "organisaties:read" in user.scopes
 
     async def _can_update(self, organisatie: Organisatie, user: CurrentUser) -> bool:
@@ -16,11 +18,9 @@ class OrganisatiePolicies(PoliciesBase):
         return "organisaties:write" in user.scopes
 
     async def assert_view_access(self, organisatie: Organisatie, user: CurrentUser):
-        if True:  # organisatie.status.id > 50: Voor iedereen zichtbaar
-            return
-        if not user.authenticated:
-            raise OrganisatieUnauthenticatedException
         if not self._can_view(organisatie, user):
+            if not user.authenticated:
+                raise OrganisatieUnauthenticatedException
             raise OrganisatiePermissionDenied
 
     async def assert_update_access(self, organisatie: Organisatie, user: CurrentUser):

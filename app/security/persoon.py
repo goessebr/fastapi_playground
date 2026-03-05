@@ -23,9 +23,9 @@ class PersoonPolicies(PoliciesBase):
         return "personen:write" in user.scopes
 
     async def assert_view_access(self, persoon: Persoon, user: CurrentUser):
-        if not user.authenticated:
-            raise PersoonUnauthenticatedException
         if not self._can_view(persoon, user):
+            if not user.authenticated:
+                raise PersoonUnauthenticatedException
             raise PersoonPermissionDenied
 
     async def assert_update_access(self, persoon: Persoon, user: CurrentUser):

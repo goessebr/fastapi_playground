@@ -11,6 +11,7 @@ from app.schemas.organisatie import OrganisatieSummary, OrganisatieRef
 
 
 class PersoonBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     voornaam: str = Field(max_length=120)
 
 
