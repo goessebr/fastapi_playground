@@ -122,7 +122,7 @@ def get_persoon_presenter() -> PersoonPresenter:
 
 
 async def get_existing_persoon(
-    id: int,  # Param
+    persoon_id: int,  # Param
     service: PersoonService = Depends(get_persoon_service),
 ) -> Persoon:
     persoon = await service.get_persoon(persoon_id)
