@@ -15,7 +15,6 @@ class PersoonPresenter:
         """
         if persoon.zichtbaarheid == ZichtbaarheidEnum.publiek:
             return PersoonResponseFull.model_validate(persoon)
-        if "personen:read" in user.scopes:
+        if "personen:read" in getattr(user, "scopes", ()):
             return PersoonResponseFull.model_validate(persoon)
         return PersoonResponseAnoniem.model_validate(persoon)
-
