@@ -36,8 +36,10 @@ async def create_persoon(
     persoon_data: PersoonCreate,
     service: Annotated[PersoonService, Depends(get_persoon_service)],
     current_user: CurrentUserDependency,
+    presenter: PersoonPresenter = Depends(get_persoon_presenter),
 ):
-    return await service.create_persoon(persoon_data, created_by=current_user)
+    new = await service.create_persoon(persoon_data, created_by=current_user)
+    return presenter.present(new, current_user)
 
 
 @router.get(
