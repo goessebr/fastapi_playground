@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from fastapi import HTTPException
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import status
@@ -13,8 +12,7 @@ from app.api.dependencies import get_persoon_presenter
 from app.api.dependencies import get_persoon_service
 from app.api.responses import RESPONSES_GET_PERSOON
 from app.api.responses import RESPONSES_POST_PERSOON
-from app.exceptions.persoon import EXC_MSG_PERSOON_EXISTS
-from app.exceptions.persoon import PersoonExistsException
+from app.exceptions.common import ValidationException
 from app.presenters.persoon import PersoonPresenter
 from app.schemas.persoon import PersoonCreate
 from app.schemas.persoon import PersoonResponse
@@ -42,13 +40,8 @@ async def create_persoon(
 ):
     try:
         return await service.create_persoon(persoon_data, created_by=current_user)
-    except PersoonExistsException:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=EXC_MSG_PERSOON_EXISTS,
-        )
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+        raise ValidationException(message=str(exc)) from exc
 
 
 @router.get(

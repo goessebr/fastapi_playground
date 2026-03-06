@@ -5,6 +5,7 @@ from app.api.dependencies import ExistingOrganisatieDependency
 from app.api.dependencies import assert_organisatie_create_access
 from app.api.dependencies import assert_organisatie_view_access
 from app.api.dependencies import get_organisatie_service
+from app.exceptions.common import ValidationException
 from app.exceptions.organisatie import OrganisatieExistsException
 from app.schemas.organisatie import OrganisatieCreate, OrganisatieResponse
 from app.services.organisatie import OrganisatieService
@@ -34,13 +35,8 @@ async def create_organisatie(
         created = await service.create_organisatie(
             organisatie_data, created_by=current_user
         )
-    except OrganisatieExistsException:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Organisatie bestaat reeds",
-        )
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+        raise ValidationException(message=str(exc)) from exc
     return created
 
 

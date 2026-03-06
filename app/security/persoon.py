@@ -1,7 +1,7 @@
 from app.data.db.models import Persoon
 from app.enums import ZichtbaarheidEnum
 from app.exceptions.persoon import PersoonUnauthenticatedException
-from app.exceptions.persoon import PersoonPermissionDenied
+from app.exceptions.persoon import PersoonPermissionDeniedException
 from app.security.auth import CurrentUser
 from app.security.base import PoliciesBase
 
@@ -26,16 +26,16 @@ class PersoonPolicies(PoliciesBase):
         if not self._can_view(persoon, user):
             if not user.authenticated:
                 raise PersoonUnauthenticatedException
-            raise PersoonPermissionDenied
+            raise PersoonPermissionDeniedException
 
     async def assert_update_access(self, persoon: Persoon, user: CurrentUser):
         if not user.authenticated:
             raise PersoonUnauthenticatedException
         if not self._can_update(persoon, user):
-            raise PersoonPermissionDenied
+            raise PersoonPermissionDeniedException
 
     async def assert_create_access(self, user: CurrentUser):
         if not user.authenticated:
             raise PersoonUnauthenticatedException
         if not self._can_create(user):
-            raise PersoonPermissionDenied
+            raise PersoonPermissionDeniedException

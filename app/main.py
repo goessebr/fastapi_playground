@@ -9,6 +9,9 @@ from app.api.router import api_router
 from app.core.config import get_settings
 from app.core.health import check_db_async
 from app.core.logging import configure_logging, get_logger
+from app.exceptions.common import NotFoundException
+from app.exceptions.handlers import not_found_handler
+from app.exceptions.handlers import register_exception_handlers
 from app.infrastructure.database.sqlalchemy import dispose_engine
 from app.web.router import html_router
 
@@ -35,7 +38,12 @@ async def lifespan(app: FastAPI):
     except Exception:
         LOG.exception("Error while disposing database engine")
 
-app: FastAPI = FastAPI(title=settings.PROJECT_NAME, debug=settings.DEBUG, lifespan=lifespan)
+
+app: FastAPI = FastAPI(
+    title=settings.PROJECT_NAME, debug=settings.DEBUG, lifespan=lifespan
+)
+
+register_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

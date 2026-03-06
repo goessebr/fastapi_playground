@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,8 +9,8 @@ from app.data.db.dao.persoon import PersoonDAO
 from app.data.db.models import Organisatie
 from app.data.db.models import Persoon
 from app.data.db.session import get_db as _get_db
-from app.exceptions import EXC_MSG_ORGANISATIE_NOT_FOUND
-from app.exceptions import EXC_MSG_PERSOON_NOT_FOUND
+from app.exceptions.organisatie import OrganisatieNotFoundException
+from app.exceptions.persoon import PersoonNotFoundException
 from app.presenters.persoon import PersoonPresenter
 from app.security import OrganisatiePolicies
 from app.security import PersoonPolicies
@@ -66,10 +66,7 @@ async def get_existing_organisatie(
 ) -> Organisatie:
     organisatie = await service.get_organisatie(organisatie_id)
     if organisatie is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=EXC_MSG_ORGANISATIE_NOT_FOUND,
-        )
+        raise OrganisatieNotFoundException
     return organisatie
 
 
@@ -127,10 +124,7 @@ async def get_existing_persoon(
 ) -> Persoon:
     persoon = await service.get_persoon(persoon_id)
     if persoon is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=EXC_MSG_PERSOON_NOT_FOUND,
-        )
+        raise PersoonNotFoundException
     return persoon
 
 

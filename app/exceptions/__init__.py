@@ -5,7 +5,6 @@ from .organisatie import (
     EXC_MSG_ORGANISATIE_UNAUTHENTICATED,
     EXC_MSG_ORGANISATIE_NOT_FOUND,
     EXC_MSG_ORGANISATIE_EXISTS,
-    OrganisatieException,
     OrganisatieExistsException,
     OrganisatiePermissionDenied,
     OrganisatieUnauthenticatedException,
@@ -15,9 +14,8 @@ from .persoon import (
     EXC_MSG_PERSOON_UNAUTHENTICATED,
     EXC_MSG_PERSOON_NOT_FOUND,
     EXC_MSG_PERSOON_EXISTS,
-    PersoonException,
     PersoonExistsException,
-    PersoonPermissionDenied,
+    PersoonPermissionDeniedException,
     PersoonUnauthenticatedException,
 )
 
@@ -42,7 +40,7 @@ __all__ = [
     "EXC_MSG_PERSOON_EXISTS",
     "PersoonException",
     "PersoonExistsException",
-    "PersoonPermissionDenied",
+    "PersoonPermissionDeniedException",
     "PersoonUnauthenticatedException",
 ]
 
