@@ -31,13 +31,9 @@ async def create_organisatie(
     current_user: CurrentUserDependency,
     service: OrganisatieService = Depends(get_organisatie_service),
 ):
-    try:
-        created = await service.create_organisatie(
-            organisatie_data, created_by=current_user
-        )
-    except ValueError as exc:
-        raise ValidationException(message=str(exc)) from exc
-    return created
+    return await service.create_organisatie(
+        organisatie_data, created_by=current_user
+    )
 
 
 @router.get(

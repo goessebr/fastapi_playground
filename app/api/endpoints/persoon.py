@@ -12,7 +12,6 @@ from app.api.dependencies import get_persoon_presenter
 from app.api.dependencies import get_persoon_service
 from app.api.responses import RESPONSES_GET_PERSOON
 from app.api.responses import RESPONSES_POST_PERSOON
-from app.exceptions.common import ValidationException
 from app.presenters.persoon import PersoonPresenter
 from app.schemas.persoon import PersoonCreate
 from app.schemas.persoon import PersoonResponse
@@ -38,10 +37,7 @@ async def create_persoon(
     service: Annotated[PersoonService, Depends(get_persoon_service)],
     current_user: CurrentUserDependency,
 ):
-    try:
-        return await service.create_persoon(persoon_data, created_by=current_user)
-    except ValueError as exc:
-        raise ValidationException(message=str(exc)) from exc
+    return await service.create_persoon(persoon_data, created_by=current_user)
 
 
 @router.get(

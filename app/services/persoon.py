@@ -2,6 +2,7 @@ from app.data.db.dao.persoon import PersoonDAO
 from app.data.db.dao.organisatie import OrganisatieDAO
 from app.data.db.models import Organisatie
 from app.data.db.models.persoon import Persoon
+from app.exceptions.common import ValidationException
 from app.schemas.persoon import PersoonCreate
 
 from app.exceptions.persoon import PersoonExistsException
@@ -33,7 +34,7 @@ class PersoonService(BaseService):
             organisaties_orm = await self.org_dao.get_by_ids(ids)
             if len(organisaties_orm) != len(ids):
                 missing = set(ids) - {o.id for o in organisaties_orm}
-                raise ValueError(f"Organisaties not found for ids: {sorted(missing)}")
+                raise ValidationException(message=f"Organisaties not found for ids: {sorted(missing)}")
 
         data = persoon_schema.model_dump()
         # verwijder eventuele dicts zodat SQLAlchemy geen dicts probeert toe te voegen aan de relatie

@@ -6,6 +6,7 @@ from typing import List
 from pydantic import field_validator
 
 from app.enums import ZichtbaarheidEnum
+from app.exceptions.common import ValidationException
 from app.schemas.common import SystemFields
 from app.schemas.organisatie import OrganisatieSummary, OrganisatieRef
 
@@ -27,8 +28,8 @@ class PersoonCreate(PersoonBase):
         ids = [getattr(ref, "id") for ref in value]
         duplicates = set([oid for oid in ids if ids.count(oid) > 1])
         if duplicates:
-            raise ValueError(
-                f"Duplicate organisatie ids are not allowed. Duplicates: {sorted(duplicates)}"
+            raise ValidationException(
+                message=f"Duplicate organisatie ids are not allowed. Duplicates: {sorted(duplicates)}"
             )
         return value
 
