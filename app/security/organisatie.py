@@ -1,0 +1,36 @@
+from app.data.db.models import Organisatie
+from app.exceptions.organisatie import OrganisatieUnauthenticatedException
+from app.exceptions.organisatie import OrganisatiePermissionDenied
+from app.security.auth import CurrentUser
+from app.security.base import PoliciesBase
+
+
+class OrganisatiePolicies(PoliciesBase):
+    async def _can_view(self, organisatie: Organisatie, user: CurrentUser) -> bool:
+        if True:  # organisatie.status.id > 50: Voor iedereen zichtbaar
+            return True
+        return "organisaties:read" in user.scopes
+
+    async def _can_update(self, organisatie: Organisatie, user: CurrentUser) -> bool:
+        return "organisaties:write" in user.scopes
+
+    async def _can_create(self, user: CurrentUser) -> bool:
+        return "organisaties:write" in user.scopes
+
+    async def assert_view_access(self, organisatie: Organisatie, user: CurrentUser):
+        if not self._can_view(organisatie, user):
+            if not user.authenticated:
+                raise OrganisatieUnauthenticatedException
+            raise OrganisatiePermissionDenied
+
+    async def assert_update_access(self, organisatie: Organisatie, user: CurrentUser):
+        if not user.authenticated:
+            raise OrganisatieUnauthenticatedException
+        if not self._can_update(organisatie, user):
+            raise OrganisatiePermissionDenied
+
+    async def assert_create_access(self, user):
+        if not user.authenticated:
+            raise OrganisatieUnauthenticatedException
+        if not self._can_create(user):
+            raise OrganisatiePermissionDenied
